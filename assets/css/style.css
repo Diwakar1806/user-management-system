@@ -17,6 +17,7 @@
   --border: var(--color-purple);
   --shadow: var(--color-purple);
   --text-shadow: var(--color-salmon);
+  --bubble: var(--color-blue);
   --text: var(--color-orange);
   --danger: var(--color-orange);
 }
@@ -34,7 +35,84 @@ body {
   background: linear-gradient(135deg, var(--color-light-yellow) 0%, var(--color-blue) 52%, var(--color-lime) 100%);
   color: var(--text);
   min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
   text-shadow: 1px 1px 2px var(--text-shadow), 0 0 5px var(--color-purple);
+}
+
+.bubble-field {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: 3;
+}
+
+.bubble {
+  animation: bubbleRise var(--bubble-duration, 22s) linear infinite;
+  animation-delay: var(--bubble-delay, 0s);
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle at 28% 24%, var(--color-light-yellow) 0 8%, var(--color-blue) 9% 18%, var(--color-lime) 19% 34%, var(--color-blue) 35% 68%, var(--color-purple) 88%, var(--color-blue) 100%);
+  border: 2px solid var(--color-blue);
+  border-radius: 50%;
+  bottom: -180px;
+  box-shadow:
+    inset 10px 12px 18px var(--color-light-yellow),
+    inset -16px -18px 28px var(--color-purple),
+    0 14px 26px var(--color-purple),
+    0 0 18px var(--color-blue);
+  height: var(--bubble-size, 96px);
+  left: var(--bubble-left, 50%);
+  opacity: .58;
+  position: absolute;
+  transform: translate3d(0, 0, 0) scale(var(--bubble-scale, 1));
+  width: var(--bubble-size, 96px);
+}
+
+.bubble::before,
+.bubble::after {
+  border-radius: 50%;
+  content: "";
+  position: absolute;
+}
+
+.bubble::before {
+  background: var(--color-light-yellow);
+  box-shadow: 18px 22px 0 -9px var(--color-blue);
+  height: 24%;
+  left: 22%;
+  opacity: .82;
+  top: 18%;
+  width: 24%;
+}
+
+.bubble::after {
+  border: 2px solid var(--color-light-yellow);
+  inset: 12%;
+  opacity: .42;
+}
+
+.bubble.bursting {
+  animation: bubbleBurst 720ms ease-out forwards !important;
+  box-shadow:
+    inset 4px 5px 10px var(--color-light-yellow),
+    inset -6px -7px 16px var(--color-purple),
+    0 0 34px var(--color-blue),
+    0 0 54px var(--color-purple);
+}
+
+.bubble.bursting::before {
+  animation: bubbleFlash 720ms ease-out forwards;
+}
+
+.bubble.bursting::after {
+  animation: bubbleRing 720ms ease-out forwards;
+}
+
+body > *:not(.bubble-field) {
+  position: relative;
+  z-index: 1;
 }
 
 button,
@@ -226,6 +304,55 @@ a:focus {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes bubbleRise {
+  0% {
+    transform: translate3d(0, 14vh, 0) scale(var(--bubble-scale, 1));
+  }
+  50% {
+    transform: translate3d(var(--bubble-drift, 34px), -45vh, 0) scale(var(--bubble-scale, 1.04));
+  }
+  100% {
+    transform: translate3d(var(--bubble-drift-end, -34px), -122vh, 0) scale(var(--bubble-scale, 1));
+  }
+}
+
+@keyframes bubbleBurst {
+  0% {
+    opacity: .72;
+    transform: scale(var(--bubble-scale, 1));
+  }
+  45% {
+    opacity: .5;
+    transform: scale(1.55);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.65);
+  }
+}
+
+@keyframes bubbleFlash {
+  0% {
+    opacity: .9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3.4) translate3d(14px, -14px, 0);
+  }
+}
+
+@keyframes bubbleRing {
+  0% {
+    opacity: .62;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.2);
   }
 }
 
