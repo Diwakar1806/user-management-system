@@ -36,6 +36,10 @@ $stmt->close();
                         <p class="text-muted">Role: <strong><?php echo htmlspecialchars($_SESSION['user_role']); ?></strong></p>
                         
                         <div class="mt-4">
+                            <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                                <a href="admin_dashboard.php" class="btn btn-warning mx-2 text-dark fw-bold">Admin Panel</a>
+                            <?php endif; ?>
+                            
                             <a href="edit_profile.php" class="btn btn-primary mx-2">Edit Profile</a>
                             <a href="logout.php" class="btn btn-danger mx-2">Logout</a>
                         </div>

@@ -1,5 +1,3 @@
-<!doctype html>
-<html lang="en">
 <?php
 session_start();
 require 'config/db.php'; // Pull in your database connection
@@ -38,8 +36,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user_name'] = $full_name;
                 $_SESSION['user_role'] = $role;
 
-                // 4. Redirect to the secure dashboard
-                header("Location: dashboard.php");
+                // 4. Redirect based on user role
+                if ($role === 'admin') {
+                    header("Location: admin_dashboard.php");
+                } else {
+                    header("Location: dashboard.php");
+                }
                 exit();
             } else {
                 $error_msg = "Invalid password.";
@@ -51,6 +53,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -99,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </form>
 
                 <div class="mt-3 text-center small">
-                  Don't have an account? <a href="register.html">Register here</a>
+                  Don't have an account? <a href="register.php">Register here</a>
                 </div>
               </div>
             </div>

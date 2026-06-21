@@ -1,17 +1,17 @@
 const navbarHTML = `
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom">
   <div class="container-fluid">
-    <a class="navbar-brand" href="login.html">Developer's &#129309; Sp&#128526;t | Access</a>
+    <a class="navbar-brand" href="login.php">Developer's &#129309; Sp&#128526;t | Access</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="mainNavbar">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="login.html">Login</a>
+          <a class="nav-link" href="login.php">Login</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="register.html">Register</a>
+          <a class="nav-link" href="register.php">Register</a>
         </li>
       </ul>
     </div>
@@ -151,10 +151,9 @@ function attachFormHandlers() {
       if (!email.value.trim()) { email.classList.add('is-invalid'); valid = false; }
       if (!password.value.trim()) { password.classList.add('is-invalid'); valid = false; }
       if (!valid) return;
-      // For prototype: simulate success
-      // If frontend validation passes, submit the form to the PHP backend!
-      loginForm.submit();
-      // Optionally: show a success toast or redirect
+      
+      // THIS IS THE CRITICAL LINE! It bypasses JavaScript and sends data to PHP
+      loginForm.submit(); 
     });
   }
 
