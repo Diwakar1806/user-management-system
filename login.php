@@ -1,5 +1,56 @@
 <!doctype html>
 <html lang="en">
+<?php
+session_start();
+require 'config/db.php'; // Pull in your database connection
+
+// If the user is already logged in, redirect them to the dashboard
+if (isset($_SESSION['user_id'])) {
+    header("Location: dashboard.php");
+    exit();
+}
+
+$error_msg = "";
+
+// Check if the form was submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    if (empty($email) || empty($password)) {
+        $error_msg = "Please enter both email and password.";
+    } else {
+        // 1. Find the user by email
+        $stmt = $conn->prepare("SELECT id, full_name, password, role FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+
+        // 2. If user exists, verify the password
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($id, $full_name, $hashed_password, $role);
+            $stmt->fetch();
+
+            // password_verify() checks the entered password against the scrambled hash
+            if (password_verify($password, $hashed_password)) {
+                // 3. Password is correct! Set session variables.
+                $_SESSION['user_id'] = $id;
+                $_SESSION['user_name'] = $full_name;
+                $_SESSION['user_role'] = $role;
+
+                // 4. Redirect to the secure dashboard
+                header("Location: dashboard.php");
+                exit();
+            } else {
+                $error_msg = "Invalid password.";
+            }
+        } else {
+            $error_msg = "No account found with that email.";
+        }
+        $stmt->close();
+    }
+}
+?>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,7 +72,10 @@
             <div class="card form-card mt-4">
               <div class="card-body">
                 <h4 class="card-title mb-3 text-center">Welcome Back</h4>
-                <form id="login-form" novalidate>
+                <?php if (!empty($error_msg)): ?>
+                    <div class="alert alert-danger"><?php echo $error_msg; ?></div>
+                <?php endif; ?>
+                <form id="login-form" method="POST" action="login.php" novalidate>
                   <div class="mb-3">
                     <label for="login-email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="login-email" name="email" required>
