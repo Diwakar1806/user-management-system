@@ -1,3 +1,51 @@
+<?php
+session_start();
+require 'config/db.php'; // Pull in your database connection
+
+$error_msg = "";
+$success_msg = "";
+
+// Check if the form was submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Capture and sanitize the input data
+    $name = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+
+    // 1. Backend Validation
+    if (empty($name) || empty($email) || empty($password)) {
+        $error_msg = "All fields are required.";
+    } elseif ($password !== $confirm_password) {
+        $error_msg = "Passwords do not match.";
+    } else {
+        // 2. Check if the email is already in the database
+        $check_stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+        $check_stmt->bind_param("s", $email); // 's' means string
+        $check_stmt->execute();
+        $check_stmt->store_result();
+
+        if ($check_stmt->num_rows > 0) {
+            $error_msg = "This email is already registered.";
+        } else {
+            // 3. Hash the password securely (Task-3 Requirement)
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            // 4. Insert the new user into the database
+            $insert_stmt = $conn->prepare("INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)");
+            $insert_stmt->bind_param("sss", $name, $email, $hashed_password);
+
+            if ($insert_stmt->execute()) {
+                $success_msg = "Registration successful! You can now login.";
+            } else {
+                $error_msg = "Something went wrong. Please try again.";
+            }
+            $insert_stmt->close();
+        }
+        $check_stmt->close();
+    }
+}
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -21,7 +69,14 @@
             <div class="card form-card mt-4">
               <div class="card-body">
                 <h4 class="card-title mb-3 text-center">Create Account</h4>
-                <form id="register-form" novalidate>
+                <?php if (!empty($error_msg)): ?>
+                    <div class="alert alert-danger"><?php echo $error_msg; ?></div>
+                <?php endif; ?>
+
+                <?php if (!empty($success_msg)): ?>
+                    <div class="alert alert-success"><?php echo $success_msg; ?></div>
+                <?php endif; ?>
+                <form id="register-form" method="POST" action="register.php" novalidate>
                   <div class="mb-3">
                     <label for="register-name" class="form-label">Full Name</label>
                     <input type="text" class="form-control" id="register-name" name="name" required>

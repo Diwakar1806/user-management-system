@@ -152,7 +152,8 @@ function attachFormHandlers() {
       if (!password.value.trim()) { password.classList.add('is-invalid'); valid = false; }
       if (!valid) return;
       // For prototype: simulate success
-      console.log('Login submitted', { email: email.value });
+      // If frontend validation passes, submit the form to the PHP backend!
+      loginForm.submit();
       // Optionally: show a success toast or redirect
     });
   }
@@ -207,7 +208,8 @@ function attachFormHandlers() {
       if (!valid) return;
 
       // Simulate AJAX registration
-      console.log('Register submitted', { name: name.value, email: emailInput.value });
+      // If frontend validation passes, submit the form to the PHP backend!
+      registerForm.submit();
       // Optionally: clear form or show success
     });
   }
