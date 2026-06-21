@@ -4,12 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Redirecting...</title>
-    <meta http-equiv="refresh" content="0; url=login.html">
+    <meta http-equiv="refresh" content="0; url=login.php">
   </head>
   <body>
     <script>
-      window.location.replace('login.html');
+      // Changed to .php here
+      window.location.replace('login.php');
     </script>
-    <p>Redirecting to <a href="login.html">login.html</a>...</p>
+    <p>Redirecting to <a href="login.php">login.php</a>...</p>
   </body>
 </html>
